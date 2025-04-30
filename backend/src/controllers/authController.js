@@ -1,23 +1,23 @@
-const User = require('../models/User');
+import User from "../models/User.js";
 
 /**
  * @desc    Register user
  * @route   POST /api/auth/register
  * @access  Public
  */
-exports.register = async (req, res, next) => {
+const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [{ email }, { username }]
+    const existingUser = await User.findOne({
+      $or: [{ email }, { username }],
     });
 
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'Email or username already exists'
+        error: "Email or username already exists",
       });
     }
 
@@ -25,7 +25,7 @@ exports.register = async (req, res, next) => {
     const user = await User.create({
       username,
       email,
-      password
+      password,
     });
 
     // Generate JWT token
@@ -33,8 +33,8 @@ exports.register = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully',
-      token
+      message: "User registered successfully",
+      token,
     });
   } catch (err) {
     next(err);
@@ -46,17 +46,17 @@ exports.register = async (req, res, next) => {
  * @route   POST /api/auth/login
  * @access  Public
  */
-exports.login = async (req, res, next) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     // Check if user exists
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials'
+        error: "Invalid credentials",
       });
     }
 
@@ -66,7 +66,7 @@ exports.login = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials'
+        error: "Invalid credentials",
       });
     }
 
@@ -79,8 +79,8 @@ exports.login = async (req, res, next) => {
       user: {
         id: user._id,
         username: user.username,
-        email: user.email
-      }
+        email: user.email,
+      },
     });
   } catch (err) {
     next(err);
@@ -92,7 +92,7 @@ exports.login = async (req, res, next) => {
  * @route   GET /api/auth/me
  * @access  Private
  */
-exports.getMe = async (req, res, next) => {
+const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
 
@@ -102,10 +102,12 @@ exports.getMe = async (req, res, next) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        createdAt: user.createdAt
-      }
+        createdAt: user.createdAt,
+      },
     });
   } catch (err) {
     next(err);
   }
 };
+
+export { register, login, getMe };

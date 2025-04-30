@@ -1,36 +1,39 @@
-const Task = require('../models/Task');
+import Task from "../models/Task.js";
 
 /**
  * @desc    Get all tasks for the authenticated user
  * @route   GET /api/tasks
  * @access  Private
  */
-exports.getTasks = async (req, res, next) => {
+const getTasks = async (req, res, next) => {
   try {
     // Build query
     const query = { userId: req.user.id };
-    
+
     // Filter by status if provided
-    if (req.query.status && ['To Do', 'In Progress', 'Done'].includes(req.query.status)) {
+    if (
+      req.query.status &&
+      ["To Do", "In Progress", "Done"].includes(req.query.status)
+    ) {
       query.status = req.query.status;
     }
 
     // Search by title if provided
     if (req.query.search) {
-      query.title = { $regex: req.query.search, $options: 'i' };
+      query.title = { $regex: req.query.search, $options: "i" };
     }
 
     // Sort options
     let sortBy = {};
     if (req.query.sort) {
       switch (req.query.sort) {
-        case 'dueDate':
+        case "dueDate":
           sortBy = { dueDate: 1 };
           break;
-        case 'dueDate_desc':
+        case "dueDate_desc":
           sortBy = { dueDate: -1 };
           break;
-        case 'status':
+        case "status":
           sortBy = { status: 1 };
           break;
         default:
@@ -47,7 +50,7 @@ exports.getTasks = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: tasks.length,
-      data: tasks
+      data: tasks,
     });
   } catch (err) {
     next(err);
@@ -59,23 +62,23 @@ exports.getTasks = async (req, res, next) => {
  * @route   GET /api/tasks/:id
  * @access  Private
  */
-exports.getTask = async (req, res, next) => {
+const getTask = async (req, res, next) => {
   try {
     const task = await Task.findOne({
       _id: req.params.id,
-      userId: req.user.id
+      userId: req.user.id,
     });
 
     if (!task) {
       return res.status(404).json({
         success: false,
-        error: 'Task not found'
+        error: "Task not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: task
+      data: task,
     });
   } catch (err) {
     next(err);
@@ -87,7 +90,7 @@ exports.getTask = async (req, res, next) => {
  * @route   POST /api/tasks
  * @access  Private
  */
-exports.createTask = async (req, res, next) => {
+const createTask = async (req, res, next) => {
   try {
     // Add user ID to request body
     req.body.userId = req.user.id;
@@ -96,7 +99,7 @@ exports.createTask = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      data: task
+      data: task,
     });
   } catch (err) {
     next(err);
@@ -108,33 +111,29 @@ exports.createTask = async (req, res, next) => {
  * @route   PUT /api/tasks/:id
  * @access  Private
  */
-exports.updateTask = async (req, res, next) => {
+const updateTask = async (req, res, next) => {
   try {
     let task = await Task.findOne({
       _id: req.params.id,
-      userId: req.user.id
+      userId: req.user.id,
     });
 
     if (!task) {
       return res.status(404).json({
         success: false,
-        error: 'Task not found'
+        error: "Task not found",
       });
     }
 
     // Update task
-    task = await Task.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
+    task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
     res.status(200).json({
       success: true,
-      data: task
+      data: task,
     });
   } catch (err) {
     next(err);
@@ -146,17 +145,17 @@ exports.updateTask = async (req, res, next) => {
  * @route   DELETE /api/tasks/:id
  * @access  Private
  */
-exports.deleteTask = async (req, res, next) => {
+const deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findOne({
       _id: req.params.id,
-      userId: req.user.id
+      userId: req.user.id,
     });
 
     if (!task) {
       return res.status(404).json({
         success: false,
-        error: 'Task not found'
+        error: "Task not found",
       });
     }
 
@@ -164,9 +163,11 @@ exports.deleteTask = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: {}
+      data: {},
     });
   } catch (err) {
     next(err);
   }
 };
+
+export { getTask, getTasks, updateTask, deleteTask, createTask };
