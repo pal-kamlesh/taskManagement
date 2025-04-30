@@ -12,8 +12,14 @@ const app = express();
 // Connect to database
 connectDB();
 
-// Middlewares
-app.use(cors());
+const allowedOrigin = "https://task-management-wine-chi.vercel.app";
+
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(morgan("dev"));
 
