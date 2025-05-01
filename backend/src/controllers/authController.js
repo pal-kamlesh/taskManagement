@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import errorHandler from "../utils/error.js";
 
 /**
  * @desc    Register user
@@ -9,26 +10,20 @@ const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({
       $or: [{ email }, { username }],
     });
 
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        error: "Email or username already exists",
-      });
+      return next(errorHandler(400, "Email or username already exists"));
     }
 
-    // Create user
     const user = await User.create({
       username,
       email,
       password,
     });
 
-    // Generate JWT token
     const token = user.getSignedJwtToken();
 
     res.status(201).json({
@@ -50,27 +45,18 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: "Invalid credentials",
-      });
+      return next(errorHandler(401, "Invalid credentials"));
     }
 
-    // Check if password matches
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        error: "Invalid credentials",
-      });
+      return next(errorHandler(401, "Invalid credentials"));
     }
 
-    // Generate JWT token
     const token = user.getSignedJwtToken();
 
     res.status(200).json({

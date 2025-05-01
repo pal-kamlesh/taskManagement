@@ -1,4 +1,5 @@
 import Task from "../models/Task.js";
+import errorHandler from "../utils/error.js";
 
 /**
  * @desc    Get all tasks for the authenticated user
@@ -7,10 +8,8 @@ import Task from "../models/Task.js";
  */
 const getTasks = async (req, res, next) => {
   try {
-    // Build query
     const query = { userId: req.user.id };
 
-    // Filter by status if provided
     if (
       req.query.status &&
       ["To Do", "In Progress", "Done"].includes(req.query.status)
@@ -18,12 +17,10 @@ const getTasks = async (req, res, next) => {
       query.status = req.query.status;
     }
 
-    // Search by title if provided
     if (req.query.search) {
       query.title = { $regex: req.query.search, $options: "i" };
     }
 
-    // Sort options
     let sortBy = {};
     if (req.query.sort) {
       switch (req.query.sort) {
@@ -40,11 +37,9 @@ const getTasks = async (req, res, next) => {
           sortBy = { createdAt: -1 };
       }
     } else {
-      // Default sort by created date (newest first)
       sortBy = { createdAt: -1 };
     }
 
-    // Execute query
     const tasks = await Task.find(query).sort(sortBy);
 
     res.status(200).json({
@@ -70,10 +65,7 @@ const getTask = async (req, res, next) => {
     });
 
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        error: "Task not found",
-      });
+      return next(errorHandler(404, "Task not found"));
     }
 
     res.status(200).json({
@@ -92,7 +84,6 @@ const getTask = async (req, res, next) => {
  */
 const createTask = async (req, res, next) => {
   try {
-    // Add user ID to request body
     req.body.userId = req.user.id;
 
     const task = await Task.create(req.body);
@@ -119,13 +110,9 @@ const updateTask = async (req, res, next) => {
     });
 
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        error: "Task not found",
-      });
+      return next(errorHandler(404, "Task not found"));
     }
 
-    // Update task
     task = await Task.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -153,10 +140,7 @@ const deleteTask = async (req, res, next) => {
     });
 
     if (!task) {
-      return res.status(404).json({
-        success: false,
-        error: "Task not found",
-      });
+      return next(errorHandler(404, "Task not found"));
     }
 
     await task.deleteOne();
