@@ -1,6 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Helper function to handle fetch requests with authentication
 const fetchWithAuth = async (url, options = {}) => {
   const token = localStorage.getItem("token");
 
@@ -21,7 +20,11 @@ const fetchWithAuth = async (url, options = {}) => {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Something went wrong");
+    throw new Error(
+      errorData.message ||
+        errorData?.errors[0]?.message ||
+        "Something went wrong"
+    );
   }
 
   return response.json();
