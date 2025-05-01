@@ -41,7 +41,7 @@ A full-stack task management application built with Node.js, Express, MongoDB, a
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/task-management.git
+git clone https://github.com/pal-kamlesh/taskManagement.git
 cd task-management
 ```
 
