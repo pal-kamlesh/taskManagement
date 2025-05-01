@@ -143,13 +143,14 @@ task-management/
 │   └── server.js           # Server entry point
 │
 └── frontend/               # Frontend code
+    ├── public              # Static assets
     ├── src/
     │   ├── components/     # React components
     │   ├── context/        # Context providers
-    │   ├── pages/          # Page components
     │   ├── services/       # API service functions
     │   ├── utils/          # Utility functions
     │   ├── App.jsx         # Main App component
+    │   ├── index.css       # Style
     │   └── main.jsx        # React entry point
     ├── .env                # Environment variables (create this)
     └── package.json        # Frontend dependencies
