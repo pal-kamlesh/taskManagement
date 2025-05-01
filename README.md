@@ -195,6 +195,46 @@ The frontend is configured to be deployed on Vercel, as indicated by the CORS co
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Project Approach, Challenges & Trade-offs
+
+### Development Approach
+
+When developing this task management application, I focused on creating a clean, modular architecture that separates concerns effectively and promotes maintainability. My approach consisted of:
+
+1. **Backend-First Development**: I built a robust API with Express.js first, ensuring data operations and business logic were solid before moving to the frontend.
+
+2. **Modular Component Design**: The frontend is structured with reusable components to maintain consistency and reduce duplicate code.
+
+3. **JWT Authentication**: I implemented a secure authentication system using JWTs to protect user data while maintaining a good user experience.
+
+4. **Responsive UI**: The application is fully responsive to provide a seamless experience across devices of different sizes.
+
+### Challenges Faced
+
+During development, I encountered several challenges:
+
+1. **State Management**: As the application grew, managing state across components became complex. I solved this by implementing React Context API for global state management, particularly for authentication state.
+
+2. **Form Validation**: I used express-validator on the backend and custom validation hooks on the frontend to ensure data integrity.
+
+3. **Error Handling**: I developed a standardized error middleware on the backend and consistent error handling patterns on the frontend.
+
+### Trade-offs
+
+Several trade-offs were made during development:
+
+1. **Client-side Filtering and Sorting**: Currently, task filtering, sorting, and searching are implemented on the frontend. This approach works well for smaller datasets but may impact performance as the number of tasks grows. A future improvement would be to implement server-side filtering, sorting, and pagination to handle larger datasets more efficiently.
+
+2. **JWT Storage**: I chose to store JWTs in localStorage for simplicity, though this comes with some security considerations. A more secure approach would be to implement HTTP-only cookies for production use.
+
+3. **Error Feedback**: The current error handling is functional but basic. A more comprehensive error logging system would be beneficial.
+
+4. **Offline Support**: The application currently doesn't support offline mode, which could be implemented using service workers in a future update.
+
+5. **Reducing loading**: For every action performed there is noticable amout of loading delay, which could be improved which could be handeled more gracefully.
+
+These trade-offs represent areas for potential future improvement as the application scales and evolves.
+
 ## License
 
 This project is licensed under the MIT License.
